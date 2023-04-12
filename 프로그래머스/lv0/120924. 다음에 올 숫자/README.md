@@ -2,6 +2,15 @@
 
 [문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/120924) 
 
+
+````
+ex) 
+   char ch = 'a';
+   1) ch - 'a' == 0
+   2) ch - 0 = 97
+````
+
+
 ### 성능 요약
 
 메모리: 4.2 MB, 시간: 0.01 ms
