@@ -1,40 +1,33 @@
 #include <string>
 #include <vector>
 #include <map>
+
 using namespace std;
 
-
-vector<string> solution(vector<string> players, vector<string> callings) { 
-
-    map<string, int> m1;
-    map<int, string> m2;
+vector<string> solution(vector<string> players, vector<string> callings) {
+    
+    map<string ,int> m;
     
     for(int i=0; i<players.size(); i++){
-        m1.insert({players[i], i+1});
-        m2.insert({i+1, players[i]});
+        m[players[i]] = i;
     }
     
     for(int i=0; i<callings.size(); i++){
-        string name = callings[i];   // kai
-        int rank = m1[name];        // 4
-        string prev_name = m2[rank-1];  // poe
+        string name = callings[i];
+        int rank = m[name];  // JJW, 3 ---> 2
+        m[name] -= 1;    // 
         
-        m1[name] -= 1;  // kai, 3
-        m1[prev_name] += 1; // poe, 4
-        m2[rank] = prev_name;  // 4, poe
-        m2[rank-1] = name;  // 3, kai
+        string prev_name = players[rank-1];    
+        players[rank-1] = name;
+        players[rank] = prev_name;
+        m[prev_name] += 1;   // ?, 3
     }
     
     vector<string> answer;
     
-    for(int i=1; i<=players.size(); i++){
-        answer.push_back(m2[i]);
+    for(int i=0; i<players.size(); i++){
+        answer.push_back(players[i]);
     }
     
     return answer;
 }
-
-
-
-
-    
