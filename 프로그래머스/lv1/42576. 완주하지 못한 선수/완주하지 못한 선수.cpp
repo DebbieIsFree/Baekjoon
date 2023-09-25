@@ -20,6 +20,7 @@ string solution(vector<string> participant, vector<string> completion) {
     for(auto each : m){
         if(each.second == 1){
             answer = each.first;
+            break;
         }
     }
     
