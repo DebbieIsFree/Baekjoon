@@ -27,7 +27,7 @@ int main(){
         }
     }
     
-    if(res != 9999)
+    if(res != 99999)
         cout << res;
     else 
         cout << "-1";
