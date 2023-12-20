@@ -21,7 +21,7 @@ int main() {
 
     int res = arr[K];
     
-    for (int i = K + 1; i <= N; i++) {
+    for (int i = K; i <= N; i++) {
         int current_sum = arr[i] - arr[i - K];
         res = max(res, current_sum);
     }
