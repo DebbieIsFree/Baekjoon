@@ -19,7 +19,6 @@ int main(){
     stack<char> st;
     char cArr[1000];
     int idx = 0;
-    bool flag = false;
     
     for(int i=0; i<str.length(); i++){
         // 알파벳일 때
@@ -32,10 +31,8 @@ int main(){
         else if(!st.empty()){
             if(str[i] == '('){
                 st.push('(');
-                flag = true;
             }
             else if(str[i] == ')'){
-                flag = false;
                 while(1){
                     if(st.top() == '('){
                         st.pop();
@@ -45,7 +42,6 @@ int main(){
                     st.pop();
                 }
             }
-            // else if(flag) st.push(str[i]);
             else if(change(st.top()) < change(str[i])) st.push(str[i]);
             else{ 
                 while(!st.empty() && change(st.top()) >= change(str[i])){
