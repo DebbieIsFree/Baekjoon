@@ -21,11 +21,7 @@ int main(){
                 dp[1][i][j] = 1e9;
         }
     }
-    
-    dp[1][0][0] = input[1][0];
-    dp[1][1][1] = input[1][1];
-    dp[1][2][2] = input[1][2];
-    
+  
     for(int i=2; i<=N; i++){
         for(int j=0; j<3; j++){
             for(int k=0; k<3; k++){
