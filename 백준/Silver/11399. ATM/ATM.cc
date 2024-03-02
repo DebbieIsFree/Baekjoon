@@ -2,8 +2,6 @@
 #include <algorithm>
 using namespace std;
 
-// 그리디 알고리즘 (구현)
-
 int P[1001];
 
 int main() {
