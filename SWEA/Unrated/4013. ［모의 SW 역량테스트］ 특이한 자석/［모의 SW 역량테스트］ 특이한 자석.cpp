@@ -16,9 +16,11 @@ int direction[4];
 bool visited[4];
 
 void getDirection(int idx, int dir){
-    // return문 넣으면 안됨
-    // if(idx == 0 || idx == 3)
-    //     return;
+    // return문 넣지 않거나 or  리턴문 넣을거면 조건식 
+    // if(idx == 0 || idx == 3)이 아니라 아래와 같아야 함.
+    // 왜냐면 idx == 0 or idx==3 일 때도 처리해야 하기 때문에.
+    if(idx == -1 || idx == 4)
+        return;
     
     if(idx-1 >=0 && !visited[idx-1]){  // 현재(idx)기준 왼쪽편
         if(map[idx][6] == map[idx-1][2]){
