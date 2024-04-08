@@ -18,8 +18,10 @@ int main(){
     }
     
     sort(v.begin(), v.end());
-    
-    //  
+
+    // 틀린 이유 : 
+    // left = v[0] 하면 틀림
+    // 절단기의 높이(H)를 최소 0에서 최대 v[N-1] 만큼 설정할 수 있다.
     long long left = 0;
     long long right = v[N-1];
     
