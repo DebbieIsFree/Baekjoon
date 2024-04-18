@@ -3,6 +3,9 @@
 #include <algorithm>
 using namespace std;
 
+// 틀린 이유 : 자료형 (int --> long long)
+// 벨만 포드는 전체 과정을 정점의 수만큼 돌리기 때문에, 음수 사이클의 절댓값의 최대 길이가 6천만(6*10^3*10^4)이라면 그 과정을 다시 N(최대500)번 반복하면서 N을 곱한 것만큼 절댓값을 키우게 됩니다.
+
 struct edge{
   int src, dest, cost;  
 };
