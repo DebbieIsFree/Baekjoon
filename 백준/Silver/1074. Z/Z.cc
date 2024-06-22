@@ -1,41 +1,48 @@
 #include <iostream>
-
+#include <math.h>
 using namespace std;
 
-int n, r, c;
-int ans;
+int N, r, c;
+int ans = 0;
 
-void Z(int y, int x, int size)
-{
-    if (y == r && x == c)
-    {
-        cout << ans << '\n';
+// Z
+int dr[] = {0, 0, 1, 1};
+int dc[] = {0, 1, 0, 1};
+
+
+void func(int row, int col, int len){
+    if(len == 2){
+        for(int i=0; i<4; i++){
+            int nr = row + dr[i];
+            int nc = col + dc[i];
+            if(nr == r && nc == c){
+                cout << ans;
+                break;
+            }
+            ans++;
+        }
         return;
     }
-
-    // r,c가 현재 사분면에 존재한다면
-    if (r < y + size && r >= y && c < x + size && c >= x)
-    {
-        // 1사분면 탐색
-        Z(y, x, size / 2);
-        // 2사분면 탐색
-        Z(y, x + size / 2, size / 2);
-        // 3사분면 탐색
-        Z(y + size / 2, x, size / 2);
-        // 4사분면 탐색
-        Z(y + size / 2, x + size / 2, size / 2);
-    }
-    else
-    {
-        ans += size * size;
+    
+    int nlen = len / 2;
+    
+    if((row <= r && r < row+len) && (col <= c && c < col+len)){
+        func(row, col, nlen);
+        func(row, col + nlen, nlen);
+        func(row + nlen, col, nlen);
+        func(row + nlen, col+nlen, nlen);
+    }else{
+        ans += len*len;
+        return;
     }
 }
-int main()
-{
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
 
-    cin >> n >> r >> c;
-    Z(0, 0, (1 << n));
+int main(){
+    cin >> N >> r >> c;
+    
+    int len = pow(2, N);
+    
+    func(0, 0, len);
+    
     return 0;
 }
