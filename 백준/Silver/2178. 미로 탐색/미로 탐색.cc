@@ -1,63 +1,58 @@
 #include <iostream>
 #include <queue>
-#include <string>
 using namespace std;
 
+int N, M;
 int arr[100][100];
 bool visited[100][100];
-int cnt[100][100];
-queue<pair<int,int>> q;
 
-int dm[4] = { -1, +1, 0, 0 };
-int dn[4] = { 0, 0, -1, +1 };
+struct Node{
+  int row, col, cnt;  
+};
 
-void BFS(int n, int m);
+int dr[] = {-1, 1, 0, 0};
+int dc[] = {0, 0, -1, 1};
 
-int N, M;
-//int cnt = 0;
-
-int main() {
-	cin >> N >> M;
-	cin.ignore();
-
-	for (int i = 0; i < N; i++) {
-		string str;
-		getline(cin, str);
-		for (int j = 0; j < M; j++) {
-			arr[i][j] = str[j] - '0';
-		}
-	}
-
-	BFS(0, 0);
-
-	cout << cnt[N-1][M-1];
-
-	return 0;
+void bfs(){
+    queue<Node> q;
+    q.push({0, 0, 1});
+    visited[0][0] = true;
+    
+    while(!q.empty()){
+        int cr = q.front().row;
+        int cc = q.front().col;
+        int cnt = q.front().cnt;
+        q.pop();
+        
+        if(cr == N-1 && cc == M-1){
+            cout << cnt;
+            break;
+        }
+        
+        for(int i=0; i<4; i++){
+            int nr = cr + dr[i];
+            int nc = cc + dc[i];
+            
+            if(nr < 0 || nr >= N || nc < 0 || nc >= M || visited[nr][nc] || arr[nr][nc] == 0)
+                continue;
+            
+            visited[nr][nc] = true;
+            q.push({nr, nc, cnt+1});
+        }
+    }
 }
 
-void BFS(int n, int m) {
-	//cnt++;
-	cnt[n][m] += 1;
-	
-	visited[n][m] = true;
-	q.push({ n, m });
-
-	while (!q.empty()) {
-		int nn = q.front().first;
-		int nm = q.front().second;
-		q.pop();
-
-		for (int k = 0; k < 4; k++) {
-			int nextn = nn + dn[k];
-			int nextm = nm + dm[k];
-			if (nextm < 0 || nextm >= M || nextn < 0 || nextn >= N)
-				continue;
-			if (!visited[nextn][nextm] && arr[nextn][nextm]) {
-				q.push({ nextn, nextm });
-				visited[nextn][nextm] = true;
-				//cnt++;
-				cnt[nextn][nextm] = cnt[nn][nm] + 1;
-			}
-		}
-	}
+int main(){
+    cin >> N >> M;
+    
+    for(int i=0; i<N; i++){
+        string str; cin >> str;
+        for(int j=0; j<M; j++){
+            arr[i][j] = str[j] - '0';
+        }
+    }
+    
+    bfs();
+    
+    return 0;
 }
