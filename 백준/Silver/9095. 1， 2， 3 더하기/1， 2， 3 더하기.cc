@@ -1,27 +1,25 @@
 #include <iostream>
 using namespace std;
 
+int T;
+int dp[12];
 
-int Find(int n) {
-	if (n == 1)
-		return 1;
-	else if (n == 2)
-		return 2;
-	else if (n == 3)
-		return 4;
-	else {
-		return Find(n - 1) + Find(n - 2) + Find(n-3);
-	}
-}
+int main(){
+    cin >> T;
+    
+    dp[1] = 1;
+    dp[2] = 2;
+    dp[3] = 4;
+    
+    for(int i=4; i<=11; i++){
+        dp[i] = dp[i-1] + dp[i-2] + dp[i-3];
+    }
+    
+    while(T--){
+        int n;  cin >> n;
+        
+        cout << dp[n] << "\n";
+    }
 
-
-int main() {
-	int t;	cin >> t;
-
-	while (t--) {
-		int n;	cin >> n;
-		cout << Find(n) << "\n";
-	}
-
-	return 0;
+    return 0;
 }
