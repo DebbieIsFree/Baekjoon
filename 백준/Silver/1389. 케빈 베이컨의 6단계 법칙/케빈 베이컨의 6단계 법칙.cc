@@ -3,52 +3,49 @@
 using namespace std;
 
 int N, M;
-const int INF = 1e9;
-int dist[101][101];
+int arr[101][101];
 
 int main(){
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    
     cin >> N >> M;
     
-    fill(&dist[0][0], &dist[0][0] + 101*101, INF);
+    fill(&arr[0][0], &arr[0][0] + 101 * 101, 987654321);
     
-    for(int i=0; i<M; i++){
+    while(M--){
         int a, b;
         cin >> a >> b;
-        dist[a][b] = 1;
-        dist[b][a] = 1;
-    }
-
-    // 플로이드 워셜
-    for(int i=1; i<=N; i++){          // 중간 거쳐가는 곳
-        for(int j=1; j<=N; j++){      // 출발
-            for(int k=1; k<=N; k++){  // 도착
-                if(dist[j][k] > dist[j][i] + dist[i][k])
-                    dist[j][k] = dist[j][i] + dist[i][k];
-            }
-        }
+        arr[a][b] = 1;
+        arr[b][a] = 1;
     }
     
-    int m = INF;
+    for(int m=1; m<=N; m++){
+        for(int s=1; s<=N; s++){
+            for(int e=1; e<=N; e++){
+                if(arr[s][e] > arr[s][m] + arr[m][e]){
+                    arr[s][e] = arr[s][m] + arr[m][e];
+                }
+            }    
+        }
+    }
+
+    int minVal = 987654321;
     int ans = 1;
     
     for(int i=1; i<=N; i++){
         int sum = 0;
-        bool flag = false;
-        
         for(int j=1; j<=N; j++){
-            if(dist[i][j] == INF){
-                flag = true;
-                break;
-            }
-            sum += dist[i][j];
+            if(i == j)
+                continue;
+            sum += arr[i][j];
         }
-        if(sum < m){
-            ans = i;
-            m = sum;
-        }else if(sum == m && i < ans){
+        if(minVal > sum){
+            minVal = sum;
             ans = i;
         }
     }
+    
     
     cout << ans;
 
