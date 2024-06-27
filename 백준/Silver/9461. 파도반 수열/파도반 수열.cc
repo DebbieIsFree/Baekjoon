@@ -1,11 +1,9 @@
 #include <iostream>
-
 using namespace std;
 
 long long dp[101];
 
 int main(){
-    
     int T;  cin >> T;
     
     dp[1] = 1;
@@ -16,11 +14,10 @@ int main(){
         dp[i] = dp[i-3] + dp[i-2];
     }
     
-    
     while(T--){
-        int n;  cin >> n;
+        int N;  cin >> N;
         
-        cout << dp[n] << "\n";
+        cout << dp[N] << "\n";
     }
 
     return 0;
