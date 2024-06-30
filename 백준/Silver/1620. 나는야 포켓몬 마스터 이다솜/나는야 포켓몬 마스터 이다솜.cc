@@ -1,46 +1,31 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include <regex>
 using namespace std;
 
-bool isNumeric(string str){
-    for(int i=0; i<str.length(); i++){
-        if(!(str[i] >= '0' && str[i] <= '9'))
-            return false;
-    }
-    return true;
-}
-
 int main(){
-    
-    ios_base::sync_with_stdio(NULL);
-    cin.tie(nullptr);
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
     
     int N, M;
     cin >> N >> M;
     
-    map<int, string> m1;
-    map<string, int> m2;
-    
+    map<string, string> name;
+    map<string, string> num;
     
     for(int i=1; i<=N; i++){
-        string name;    cin >> name;
-        m1.insert({i, name});
-        m2.insert({name, i});
+        string str; cin >> str;
+        name[str] = to_string(i);
+        num[to_string(i)] = str;
     }
     
-    for(int i=0; i<M; i++){
-        string input;    cin >> input;
-        
-        if(isNumeric(input)){
-            int n = stoi(input);
-            cout << m1[n] << "\n";
-        }
-        else{
-            cout << m2[input] << "\n";
-        }
+    while(M--){
+        string str;  cin >> str;
+        if(name.find(str) != name.end())
+            cout << name[str] << "\n";
+        else
+            cout << num[str] << "\n";
     }
-    
+
     return 0;
 }
