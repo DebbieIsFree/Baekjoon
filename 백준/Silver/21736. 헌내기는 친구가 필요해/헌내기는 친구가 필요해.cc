@@ -1,56 +1,63 @@
 #include <iostream>
-#include <vector>
+#include <queue>
 using namespace std;
 
-int dr[] = {-1,1,0,0};
-int dc[] = {0,0,-1,1};
-
-int row, col;  
+int N, M;
 char arr[600][600];
 bool visited[600][600];
 int cnt = 0;
+int sr, sc;
 
-void dfs(int cur_row, int cur_col){
-    visited[cur_row][cur_col] = true;
+int dr[] = {-1, 1, 0, 0};
+int dc[] = {0, 0, -1, 1};
+
+void bfs(){
+    queue<pair<int,int>> q;
     
-    if(arr[cur_row][cur_col] == 'P'){
-        cnt++;
-    }
+    visited[sr][sc] = true;
+    q.push({sr, sc});
     
-    for(int i=0; i<4; i++){
-        int nrow = cur_row + dr[i];
-        int ncol = cur_col + dc[i];
+    while(!q.empty()){
+        int cr = q.front().first;
+        int cc = q.front().second;
+        q.pop();
         
-        if(nrow < 0 || nrow >= row || ncol < 0 || ncol >= col)
-            continue;
-        if(!visited[nrow][ncol] && (arr[nrow][ncol] == 'O' || arr[nrow][ncol] == 'P')){
-            dfs(nrow, ncol);
+        for(int i=0; i<4; i++){
+            int nr = cr + dr[i];
+            int nc = cc + dc[i];
+            
+            if(nr < 0 || nr >= N || nc < 0 || nc >= M || visited[nr][nc] || arr[nr][nc] == 'X')
+                continue;
+                
+            if(arr[nr][nc] == 'P')
+                cnt++;
+                
+            visited[nr][nc] = true;
+            q.push({nr, nc});
         }
     }
 }
 
 int main(){
+    cin >> N >> M;
     
-    cin >> row >> col;
-    
-    int cr = 0, cc = 0;
-    
-    for(int i=0; i<row; i++){
-        for(int j=0; j<col; j++){
-            cin >> arr[i][j];
-            if(arr[i][j] == 'I'){
-                cr = i;
-                cc = j;
+    for(int i=0; i<N; i++){
+        string str; cin >> str;
+        for(int j=0; j<M; j++){
+            arr[i][j] = str[j];
+            if(str[j] == 'I'){
+                sr = i;
+                sc = j;
             }
         }
     }
     
-    dfs(cr, cc);
+    bfs();
     
-    if(cnt > 0)
-        cout << cnt;
-    else
+    if(cnt == 0)
         cout << "TT";
-        
+    else 
+        cout << cnt;
+
     return 0;
 }
