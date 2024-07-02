@@ -2,32 +2,39 @@
 #include <algorithm>
 using namespace std;
 
-int min_dp[3];
-int max_dp[3];
+int min1, min2, min3;
+int max1, max2, max3;
 
 int main(){
-    int N, input1, input2, input3, tmp1, tmp2;  cin >> N;
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    
+    int N;  cin >> N;
+
+    int n1, n2, n3, tmp;
     
     for(int i=1; i<=N; i++){
-            cin >> input1 >> input2 >> input3;
-            tmp1 = max_dp[0];
-            tmp2 = max_dp[2];
-            max_dp[0] = max(max_dp[0], max_dp[1]) + input1;
-            max_dp[2] = max(max_dp[1], max_dp[2]) + input3;
-            max_dp[1] = max(max_dp[1], max(tmp1, tmp2)) + input2;
-            
-            tmp1 = min_dp[0];
-            tmp2 = min_dp[2];
-            min_dp[0] = min(min_dp[0], min_dp[1]) + input1;
-            min_dp[2] = min(min_dp[1], min_dp[2]) + input3;
-            min_dp[1] = min(min_dp[1], min(tmp1, tmp2)) + input2;
+        cin >> n1 >> n2 >> n3;
+        
+        if(i == 1){
+            min1 = max1 = n1;
+            min2 = max2 = n2;
+            min3 = max3 = n3;
+            continue;
+        }
+        
+        tmp = min2;
+        min2 = min(min(min1, min2), min3) + n2;
+        min1 = min(min1, tmp) + n1;
+        min3 = min(tmp, min3) + n3;
+        
+        tmp = max2;
+        max2 = max(max(max1, max2), max3) + n2;
+        max1 = max(max1, tmp) + n1;
+        max3 = max(tmp, max3) + n3;
     }
     
-    
-    int min_ans = min(min_dp[0], min(min_dp[1], min_dp[2]));
-    int max_ans = max(max_dp[0], max(max_dp[1], max_dp[2]));
-    
-    cout << max_ans << " " << min_ans;
+    cout << max(max(max1, max2), max3) << " " << min(min(min1, min2), min3);
 
     return 0;
 }
