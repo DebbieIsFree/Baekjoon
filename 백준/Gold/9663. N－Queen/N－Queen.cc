@@ -1,43 +1,56 @@
 #include <iostream>
-#include <vector>
+#include <math.h>
+#include <algorithm>
 using namespace std;
 
 int N;
-int result = 0;
-bool visited[16];
-int check[16];
+int ans = 0;
+int rowCh[15];
 
-void backtracking(int row) {
-    if (row == N + 1) {
-        result++;
+void nqueen(int row, int col, int cnt, int rowCheck[15]){
+    if(cnt == N){
+        ans++;
         return;
     }
+    
+    int copyRowCheck[15];
 
-    for (int i = 1; i <= N; i++) {
+    for(int i=0; i<N; i++){
+        copyRowCheck[i] = rowCheck[i];
+    }
+    
+    for(int i=0; i<N; i++){            // col
         bool flag = false;
-        for (int j = 1; j < row; j++) {
-            if (check[j] == i || (j + check[j] == row + i) || (j - check[j] == row - i)) {
+        int c = i;
+        
+        for(int j=0; j<=row; j++){     // row
+            if(i == copyRowCheck[j]){
                 flag = true;
                 break;
             }
+                
+            if(abs(row+1-j) == abs(i-copyRowCheck[j])){
+                flag = true;
+                break;
+            }
+        }    
+        if(!flag){
+            copyRowCheck[row+1] = c;
+            nqueen(row+1, c, cnt+1, copyRowCheck);   
         }
-
-        if (!flag) {
-            check[row] = i;
-            backtracking(row + 1);
-        }
-    }
+    }   
 }
 
-int main() {
+int main(){
     cin >> N;
-
-    for (int i = 1; i <= N; i++) {
-        check[1] = i;
-        backtracking(2);
+    
+    for(int i=0; i<N; i++){
+        fill_n(rowCh, 15, -1);
+        rowCh[0] = i;
+        nqueen(0, i, 1, rowCh);
     }
-
-    cout << result;
+    
+    cout << ans;
 
     return 0;
 }
