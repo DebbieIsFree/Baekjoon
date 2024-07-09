@@ -4,11 +4,12 @@
 using namespace std;
 
 int N, M;
-vector<int> input;
+vector<int> v;
 int selected[8];
+bool isSelected[9];
 
-void func(int cnt, int mask){
-    if(cnt == M){
+void perm(int tgtIdx, int startIdx){
+    if(tgtIdx == M){
         for(int i=0; i<M; i++){
             cout << selected[i] << " ";
         }
@@ -17,24 +18,27 @@ void func(int cnt, int mask){
     }
     
     for(int i=0; i<N; i++){
-        if((mask & 1 << i) != 0)         
+        if(isSelected[i])
             continue;
-        selected[cnt] = input[i];
-        func(cnt+1, mask | 1 << i);
+        
+        selected[tgtIdx] = v[i];
+        isSelected[i] = true;
+        perm(tgtIdx+1, i);
+        isSelected[i] = false;
     }
 }
 
 int main(){
     cin >> N >> M;
-
+    
     for(int i=0; i<N; i++){
-        int n; cin >> n;
-        input.push_back(n);
+        int n;  cin >> n;
+        v.push_back(n);
     }
     
-    sort(input.begin(), input.end());
+    sort(v.begin(), v.end());
     
-    func(0, 0);
-    
+    perm(0, 0);
+
     return 0;
 }
