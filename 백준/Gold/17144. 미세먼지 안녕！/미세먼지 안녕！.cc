@@ -1,148 +1,157 @@
 #include <iostream>
+#include <vector>
+#include <queue>
 #include <algorithm>
 using namespace std;
 
 int R, C, T;
+vector<pair<int,int>> v;     // 공기 청정기 위치 {row, col}
+int map[51][51];
+queue<pair<int,int>> q;     // 먼지 위치 저장 {row, col}
+int tmp[51][51];
 
-int map[50][50];
-int temp[50][50];
+int dr[] = {-1, 1, 0, 0};
+int dc[] = {0, 0, -1, 1};
 
-// 공기 청정기 위치
-int col, urow = -1, drow;
+// 반시계 방향 회전
+int r2dr[] = {0, -1, 0, 1};
+int r2dc[] = {1, 0, -1, 0};
 
-// 우 하 좌 상 (아래쪽 공기청정기 방향 )
-int dr[] = {0, 1, 0, -1};
-int dc[] = {1, 0, -1, 0};
-
-// 우 상 좌 하  (위쪽 공기 청정기 방향)
-int dr2[] = {0, -1, 0, 1};
-int dc2[] = {1, 0, -1, 0};
+// 시계 방향 회전
+int r1dr[] = {0, 1, 0, -1};
+int r1dc[] = {1, 0, -1, 0};
 
 int main(){
     cin >> R >> C >> T;
     
-    for(int i=0; i<R; i++){
-        for(int j=0; j<C; j++){
+    for(int i=1; i<=R; i++){
+        for(int j=1; j<=C; j++){
             cin >> map[i][j];
             
             if(map[i][j] == -1){
-                if(urow == -1){
-                    urow = i;
-                    col = j;
-                }else{
-                    drow = i;
-                }
+                v.push_back({i, j});
+                map[i][j] = 0;
+            }
+            else if(map[i][j] > 0){
+                q.push({i, j});
             }
         }
     }
-
-    while(T--){
-        
-        // 매초마다 증감 관리 배열은 0으로 초기화 
-        fill(&temp[0][0], &temp[49][50], 0);
-        
-        for(int i=0; i<R; i++){
-            for(int j=0; j<C; j++){
-                
-                // 공기 청정기에서는 먼지가 퍼질 수 없다.
-                if((i == urow || i == drow) && j == col)
-                    continue;
-                
-                int ad = map[i][j] / 5;
-                int cnt = 0;    // 사방 중 퍼진 개수
-                
-                // 사방 탐색
-                for(int d=0; d<4; d++){
-                    int nr = i + dr[d];
-                    int nc = j + dc[d];
-                    
-                    // 범위 체크  + 공기 청정기로는 먼지가 들어갈 수 없다.
-                    if(nr < 0 || nr >= R || nc < 0 || nc >= C || ((nr == urow || nr == drow) && nc == col))
-                        continue;
-                        
-                    temp[nr][nc] += ad;
-                    cnt++;
-                }
-                temp[i][j] -= (ad * cnt);
-            }
-        }
-        
-        // 원본 배열에 증감 변동 사항 반영
-        for(int i=0; i<R; i++){
-            for(int j=0; j<C; j++){
-                if((i == urow || i == drow) && j == col)
-                    continue;
-                
-                map[i][j] = map[i][j] + temp[i][j];
-                
-                if(map[i][j] < 0) 
-                    map[i][j] = 0;
-            }
-        }
-     
-        
-        // 위, 아래 각각 공기 청정기 돌리기
-        int r, c, dir, prev;
-        
-        // 위쪽
-        r = urow;
-        c = 2;
-        dir = 0;
-        prev = map[urow][1];
-        
-        // r != urow && c != 0 하니까 안됨..
-        while(!(r == urow && c == 0)){
-            int tmp = map[r][c];
-            map[r][c] = prev;
-            prev = tmp;
-            
-            // while문 안에서 if 조건문 위치 중요..
-            // 순환 고리의 3개의 꼭짓점에서 다 처리하고, 그 다음에 방향 바꾸기
-            if((r == urow && c == C-1) || (r == 0 && c == C-1) || (r == 0 && c == 0))
-                dir = (dir + 1) % 4;
-            
-            r = r + dr2[dir];
-            c = c + dc2[dir];
-        }
-        map[urow][0] = 0;
-        map[urow][1] = 0;
-        
-        // 아래쪽
-        r = drow;
-        c = 2;
-        dir = 0;
-        prev = map[drow][1];
-        
-        // r != drow && c != 0 쓰니까 안됨..
-        while(!(r == drow && c == 0)){
-            int tmp = map[r][c];
-            map[r][c] = prev;
-            prev = tmp;
-            
-            // while문 안에서 if 조건문 위치 중요..
-            // 순환 고리의 3개의 꼭짓점에서 다 처리하고, 그 다음에 방향 바꾸기
-            if((r == drow && c == C-1) || (r==R-1 && c == C-1) || (r == R-1 && c == 0))
-                dir = (dir + 1) % 4;
-            
-            r = r + dr[dir];
-            c = c + dc[dir];
-        }
-        map[drow][0] = 0;   // 공기 청정기로 들어가면 소멸
-        map[drow][1] = 0;   // 공기 청정기에서 나오는건 0   
-    }
-
-    int sum = 0;
     
-    for(int i=0; i<R; i++){
-        for(int j=0; j<C; j++){
-            if((i == urow || i == drow) && j == col)
-                continue;
-            sum += map[i][j];    
+    sort(v.begin(), v.end());       // 공기청정기 row 기준 오름차순 정렬 ([0]--> 위, [1] --> 아래)
+    
+    while(T--){
+        // 매 초마다 임시 저장소 초기화
+        fill(&tmp[0][0], &tmp[0][0] + 51*51, 0);
+        
+        // step 1) 미세먼지 확산
+        while(!q.empty()){
+            int cr = q.front().first;
+            int cc = q.front().second;
+            q.pop();
+            int amount = map[cr][cc];
+            
+            int cnt = 0;
+            
+            for(int i=0; i<4; i++){
+                int nr = cr + dr[i];
+                int nc = cc + dc[i];
+                
+                if(nr <= 0 || nr > R || nc <= 0 || nc > C)
+                    continue;
+                    
+                if( (nr == v[0].first && nc == 1) || (nr == v[1].first && nc == 1) )
+                    continue;
+                
+                cnt++;
+                tmp[nr][nc] += amount / 5;
+            }
+            tmp[cr][cc] += amount - (amount/5*cnt);
+            if(tmp[cr][cc] < 0)
+                tmp[cr][cc] = 0;
+        }
+        
+        // 미세먼지 확산된 결과 반영
+        copy(&tmp[0][0], &tmp[0][0] + 51*51, &map[0][0]);
+        
+
+        // step 2) 공기청정기 가동
+        // 빈 배열
+        copy(&tmp[0][0], &tmp[0][0] + 51*51, &map[0][0]);
+        
+        // 위쪽 >> 반시계
+        int dir = 0;
+        int r = v[0].first;
+        int c = 1;
+        
+        while(true){
+            if((r==1 && c==1) || (r==v[0].first && c==C) || (r==1 && c==C)){
+                dir = (dir+1)%4;
+            }
+            int nr = r + r2dr[dir];
+            int nc = c + r2dc[dir];
+            
+            if(nr == v[0].first && nc == 1){
+                map[nr][nc] = 0;
+                break;
+            }
+            
+            if(nr == v[0].first && nc == 2){
+                map[nr][nc] = 0;
+            }
+            else{
+                map[nr][nc] = tmp[r][c];    
+            }
+            r = nr;
+            c = nc;
+        }
+        
+        // 아래쪽 >> 시계 
+        dir = 0;
+        r = v[1].first;
+        c = 1;
+        
+        while(true){
+            if((r==v[1].first && c==C) || (r==R && c==C) || (r==R && c==1)){
+                dir = (dir+1)%4;
+            }
+            int nr = r + r1dr[dir];
+            int nc = c + r1dc[dir];
+            
+            if(nr == v[1].first && nc == 1){
+                map[nr][nc] = 0;
+                break;
+            }
+            
+            if(nr == v[1].first && nc == 2){
+                map[nr][nc] = 0;
+            }
+            else{
+                map[nr][nc] = tmp[r][c];    
+            }
+            r = nr;
+            c = nc;
+        }
+        
+        // 매 초마다 새로 바뀐 미세먼지 위치 -->  queue에 삽입
+        for(int i=1; i<=R; i++){
+            for(int j=1; j<=C; j++){
+                if(map[i][j] > 0){
+                    q.push({i, j});
+                }
+            }
         }
     }
+    
+    int sum = 0;
 
+    for(int i=1; i<=R; i++){
+        for(int j=1; j<=C; j++){
+            sum += map[i][j];
+        }
+    }
+    
     cout << sum;
 
     return 0;
 }
-
