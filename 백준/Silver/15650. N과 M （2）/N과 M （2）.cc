@@ -2,34 +2,28 @@
 using namespace std;
 
 int N, M;
-int arr[9];
-int result[8];
-bool visited[9];
+int selected[8];
+// int visted[8];
 
-void backTrack(int cnt){
-    if(cnt == M){
+void perm(int tgtIdx, int start){
+    if(tgtIdx == M){
         for(int i=0; i<M; i++){
-            cout << result[i] << " ";
+            cout << selected[i] << " ";
         }
         cout << "\n";
+        return;
     }
     
-    for(int i=1; i<=N; i++){
-        if(visited[i])  
-            continue;
-        if(cnt > 0 && result[cnt-1] >= i)
-            continue;
-        visited[i] = true;
-        result[cnt] = i;
-        backTrack(cnt+1);
-        visited[i] = false;
+    for(int i=start; i<=N; i++){
+        selected[tgtIdx] = i;
+        perm(tgtIdx+1, i+1);
     }
 }
 
 int main(){
     cin >> N >> M;
-    
-    backTrack(0);
-    
+
+    perm(0, 1);
+
     return 0;
 }
