@@ -1,74 +1,63 @@
 #include <iostream>
 #include <queue>
-#include <cstring>
-
-#define INF 1e9
-
+#include <vector>
+#include <algorithm>
+#define INF 987654321
 using namespace std;
 
 int N, M, X;
-// pair<노드, 비용>
-vector<pair<int,int>> v[1001];
-int d[1001];
+int dist[1001];
+vector<vector<pair<int ,int>>> edges(1001);
+int res[1001];  
 
-void dijkstra(int start, int dest){
-    priority_queue<pair<int, int>> pq;
-    
-    pq.push({0, start});
-    d[start] = 0;
+void dijkstra(int start){
+    priority_queue<pair<int,int>> pq;
+    pq.push({0, start});        // {cost, node}
+    dist[start] = 0;
     
     while(!pq.empty()){
-        int dist = -pq.top().first;
-        int now = pq.top().second;
+        int cur = pq.top().second;
+        int cost = -pq.top().first;
         pq.pop();
         
-        if(now == dest){
-            break;     
-        }
-        
-        if(d[now] < dist)
-            continue;
-        
-        for(int i=0; i<v[now].size(); i++){
-            int cost = dist + v[now][i].second;
-            if(cost < d[v[now][i].first]){
-                d[v[now][i].first] = cost;
-                pq.push({-cost, v[now][i].first});
+        for(int i=0; i<edges[cur].size(); i++){
+            int next = edges[cur][i].first;
+            int nextCost = edges[cur][i].second;
+            
+            if(dist[next] > cost + nextCost){
+                dist[next] = cost + nextCost;
+                pq.push({-dist[next], next});
             }
         }
     }
 }
 
-
-int main(void){
+int main(){
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
     
     cin >> N >> M >> X;
     
     for(int i=0; i<M; i++){
         int s, e, t;
         cin >> s >> e >> t;
-        v[s].push_back({e, t});
+        edges[s].push_back({e, t});
     }
-    
-    
-    int ans = 0;
     
     for(int i=1; i<=N; i++){
-        int tmp = 0;
-        
-        fill_n(d, 1001, INF);
-        dijkstra(X, i);
-        tmp += d[i];
-        
-        fill_n(d, 1001, INF);
-        dijkstra(i, X);
-        tmp += d[X];
-        
-        if(ans < tmp)
-            ans = tmp;
+        fill_n(dist, 1001, INF);
+        dijkstra(i);
+        res[i] += dist[X];
+    }
+
+    fill_n(dist, 1001, INF);
+    dijkstra(X);
+    
+    for(int i=1; i<=N; i++){
+        res[i] += dist[i];
     }
     
-    cout << ans;
+    cout << *max_element(res, res + 1001);
+    
+    return 0;
 }
-
-
