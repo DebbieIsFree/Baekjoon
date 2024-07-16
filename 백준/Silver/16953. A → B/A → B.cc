@@ -1,40 +1,54 @@
 #include <iostream>
 #include <queue>
+#include <set>
 #include <string>
+#define INF 1000000000
 using namespace std;
 
-int main(){
 
-    int A, B;
+int main(){
+    long long A, B;
     cin >> A >> B;
     
-    // num, breadth
     queue<pair<long long, int>> q;
+    set<long long> s;
     
     q.push({A, 1});
+    s.insert(A);
+    
+    int answer = -1;
     
     while(!q.empty()){
-        long long num = q.front().first;
-        int breadth = q.front().second;
+        long long cur = q.front().first;
+        int cnt = q.front().second;
         q.pop();
-        
-        if(num == B){
-            cout << breadth;
-            return 0;
+
+        if(cur == B){
+            answer = cnt;
+            break;
         }
         
-        // string str = to_string(num);
-        // str += "1";
+        if(s.find(cur *2) == s.end() && cur*2 <= INF){
+            q.push({cur*2, cnt+1});
+            s.insert(cur * 2);
+        }
         
-        long long tmp = num * 10 +1;
+        string str = "";
+        str += to_string(cur);
+        str += "1";
+        long long n = stoll(str);
         
-        if(num*2 <= B)
-            q.push({num*2, breadth+1});
-        if(tmp <= B)
-            q.push({tmp, breadth+1});
+        if(s.find(n) == s.end() && n <= INF){
+            q.push({n, cnt+1});
+            s.insert(n);
+        }
     }
     
-    cout << "-1";
+    if(answer == -1){
+        cout << "-1";
+    }else{
+        cout << answer;
+    }
 
     return 0;
 }
