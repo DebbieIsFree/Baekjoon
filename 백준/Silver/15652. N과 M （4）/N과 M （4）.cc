@@ -1,40 +1,28 @@
 #include <iostream>
-#include <vector>
 using namespace std;
 
 int N, M;
+int selected[8];
 
-void backtrack(int cnt, int cur, vector<int> v){
-    if(cnt == M){
-        for(int i=0; i<v.size(); i++){
-            cout << v[i] << " ";
+void comb(int tgtIdx, int startIdx){
+    if(tgtIdx == M){
+        for(int i=0; i<M; i++){
+            cout << selected[i] << " ";
         }
-        cout  << "\n";
+        cout << "\n";
         return;
     }
-        
-    for(int i=1; i<=N; i++){
-        if(cur > i){
-            continue;
-        }
-        else{
-            v.push_back(i);
-            backtrack(cnt+1, i, v);
-            v.pop_back();  
-        }
+    
+    for(int i=startIdx; i<=N; i++){
+        selected[tgtIdx] = i;
+        comb(tgtIdx+1, i);
     }
 }
 
 int main(){
     cin >> N >> M;
     
-    vector<int> v;
-    
-    for(int i=1; i<=N; i++){
-        v.push_back(i);
-        backtrack(1, i, v);
-        v.pop_back();
-    }
-    
+    comb(0, 1);
+
     return 0;
 }
