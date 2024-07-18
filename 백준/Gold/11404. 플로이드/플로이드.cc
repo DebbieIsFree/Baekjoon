@@ -1,51 +1,51 @@
 #include <iostream>
 #include <algorithm>
+#define INF 987654321
 using namespace std;
-
-#define INF 1e9
 
 int N, M;
 int dist[101][101];
+
+void floyd(){
+    for(int m=1; m<=N; m++){
+        for(int s=1; s<=N; s++){
+            for(int e=1; e<=N; e++){
+                if(dist[s][e] > dist[s][m] + dist[m][e])  
+                    dist[s][e] = dist[s][m] + dist[m][e];
+            }
+        }
+    }
+}
 
 int main(){
     cin >> N;
     cin >> M;
     
-    for(int i=1; i<=N; i++){
-        fill_n(dist[i], 101, INF);
-    }
+    int s, e, c;
+    
+    fill(&dist[0][0], &dist[0][0] + 101 * 101, INF);
     
     for(int i=0; i<M; i++){
-        int a, b, c;
-        cin >> a >> b >> c;
-        if(c < dist[a][b]){
-            dist[a][b] = c;
-        }
+        cin >> s >> e >> c;
+        
+        if(dist[s][e] != INF && dist[s][e] < c)
+            continue;
+            
+        dist[s][e] = c;
     }
 
-    for(int i=1; i<=N; i++){    // 거쳐가는 곳
-        for(int k=1; k<=N; k++){    // 시작
-            for(int j=1; j<=N; j++){    // 도착
-                if(k == j){
-                    // dist[i][j] = INF;
-                    continue;
-                }
-                if(dist[k][i] + dist[i][j] < dist[k][j]){
-                    dist[k][j] = dist[k][i] + dist[i][j];
-                }
-            }
-        }
-    }
-
-    for(int i=1; i<=N; i++){
-        for(int j=1; j<=N; j++){
-            if(dist[i][j] == INF)
+    floyd();
+    
+    for(int s=1; s<=N; s++){
+        for(int e=1; e<=N; e++){
+            if(dist[s][e] == INF || s == e)
                 cout << "0 ";
-            else
-                cout << dist[i][j] << " ";
+            else 
+                cout << dist[s][e] << " ";
         }
         cout << "\n";
     }
 
+    
     return 0;
 }
