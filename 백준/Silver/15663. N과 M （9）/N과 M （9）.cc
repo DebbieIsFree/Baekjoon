@@ -6,46 +6,48 @@
 using namespace std;
 
 int N, M;
-bool visited[8];
-vector<int> input;
+vector<int> v;
 int selected[8];
-set<string>s;
+bool isVisited[8];
+set<string> s;
 
-void func(int cnt){
-    if(cnt == M){
+void perm(int tgtIdx){
+    if(tgtIdx == M){
         string str = "";
         for(int i=0; i<M; i++){
-            // cout << selected[i] << " ";
-            str += to_string(selected[i]) + " ";
+            str += to_string(selected[i]);
+            str += " ";
         }
+        str += "\n";
         if(s.find(str) == s.end()){
-            cout << str << "\n";
             s.insert(str);
+            cout << str;
         }
         return;
     }
     
     for(int i=0; i<N; i++){
-        if(visited[i])
+        if(isVisited[i])
             continue;
-        visited[i] = true;
-        selected[cnt] = input[i];
-        func(cnt+1);
-        visited[i] = false;
+        
+        isVisited[i] = true;
+        selected[tgtIdx] = v[i];
+        perm(tgtIdx+1);
+        isVisited[i] = false;
     }
 }
 
 int main(){
     cin >> N >> M;
-   
+    
     for(int i=0; i<N; i++){
-       int n;   cin >> n;
-       input.push_back(n);
+        int n;  cin >> n;
+        v.push_back(n);
     }
-    
-    sort(input.begin(), input.end());
 
-    func(0);
+    sort(v.begin(), v.end());
     
+    perm(0);
+
     return 0;
 }
