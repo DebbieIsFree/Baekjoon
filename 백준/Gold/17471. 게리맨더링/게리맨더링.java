@@ -1,116 +1,139 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
-public class Main {
-	static int N;
-	static int[] people;
-	static int[][] matrix;
-	static int[] selected = new int[10];
-	static int ans = Integer.MAX_VALUE;
-
-	public static void main(String[] args) throws Exception {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		N = Integer.parseInt(br.readLine());
-		matrix = new int[N + 1][N + 1];
-		people = new int[N + 1];
-
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		for (int i = 1; i <= N; i++) { // 각 정점의 인구수 저장
-			people[i] = Integer.parseInt(st.nextToken());
-		}
-
-		for (int i = 1; i <= N; i++) {
-			matrix[i][i] = 1;
-		}
-
-		for (int i = 1; i <= N; i++) { // 인접 리스트
-			st = new StringTokenizer(br.readLine());
-			int cnt = Integer.parseInt(st.nextToken());
-			for (int j = 0; j < cnt; j++) {
-				int node = Integer.parseInt(st.nextToken());
-				matrix[i][node] = 1; // 인접 정점 넣기
-				matrix[node][i] = 1; // 인접 정점 넣기f
-			}
-		}
-
-		for (int i = 1; i <= N - 1; i++) {
-			comb(1, 0, i);
-		}
-
-		if (ans == Integer.MAX_VALUE)
-			System.out.println("-1");
-		else
-			System.out.println(ans);
-
-	} // main
-
-	static void comb(int srcIdx, int tgtIdx, int limit) {
-		if (tgtIdx == limit) {
-			List<Integer> listA = new ArrayList<>();
-			List<Integer> listB = new ArrayList<>();
-			int idx = 0;
-			for(int i=1; i<=N; i++) {
-				if(i == selected[idx]) {
-					listA.add(i);
-					idx++;
-				}else {
-					listB.add(i);
-				}
-			}
-			int cost = check(listA, listB);
-			ans = Math.min(ans, cost);
-			return;
-		}
-		if (srcIdx == N + 1)
-			return;
-
-		selected[tgtIdx] = srcIdx;
-		comb(srcIdx + 1, tgtIdx + 1, limit);
-		comb(srcIdx + 1, tgtIdx, limit);
+public class Main{
+    
+    static int N;
+    static int answer = 987_654_321;
+    static int[] people;
+    static boolean[][] map;
+    static boolean[] selected;
+    static boolean[] visited;
+    static boolean flag;
+    
+	public static void main(String[] args) throws Exception{
+	   BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	   StringTokenizer st = new StringTokenizer(br.readLine());
+	    
+	   N = Integer.parseInt(st.nextToken());
+	   people = new int[N+1];
+	   map = new boolean[N+1][N+1];
+	   selected = new boolean[N+1];
+	   visited = new boolean[N+1];
+	   
+	   st = new StringTokenizer(br.readLine());
+	   for(int i=1; i<=N; i++){
+	       people[i] = Integer.parseInt(st.nextToken());
+	   }
+	   
+	   for(int i=1; i<=N; i++){
+	       st = new StringTokenizer(br.readLine());
+	       int n = Integer.parseInt(st.nextToken());
+	       
+	       for(int j=1; j<=n; j++){
+	           int adjIdx = Integer.parseInt(st.nextToken());
+	           map[i][adjIdx] = true;
+	       }
+	   }
+	   
+	   for(int i=1; i<=N/2; i++){
+	       comb(i, 0, 1);
+	   }
+	   
+	   if(answer == 987_654_321)
+	       System.out.println("-1");
+	   else
+	       System.out.println(answer);
 	}
-
-	static boolean dfs(int start, boolean[] visited, List<Integer> list, int cnt) {
-		visited[start] = true;
-
-		if (cnt == list.size()) {
-			return true;
-		}
-
-		for (int i = 1; i <= N; i++) {
-			if (!visited[i] && matrix[start][i] == 1 && list.contains(i)) {
-				dfs(i, visited, list, cnt + 1);
-			}
-		}
-		
-		for(int idx : list) {
-			if(!visited[idx])
-				return false;
-		}
-		return true;
+	
+	public static void comb(int goal, int cnt, int start){
+	    if(cnt == goal){
+	        List<Integer> group1 = new ArrayList<>();
+    	    List<Integer> group2 = new ArrayList<>();
+    	    
+    	    for(int i=1; i<=N; i++){
+    	        if(selected[i])
+    	            group1.add(i);
+    	        else
+    	            group2.add(i);
+    	    }
+    	   
+	        boolean connected = isConnected(group1, group2);
+	        if(connected){
+	            calc(group1, group2);
+	        }
+	        return;
+	    }
+	    
+	    for(int i=start; i<=N; i++){
+	        if(selected[i])
+	            continue;
+	        
+	        selected[i] = true;
+	        comb(goal, cnt+1, i+1);
+	        
+	        selected[i] = false;
+	        comb(goal, cnt, i+1);
+	    }
 	}
-
-	static int check(List<Integer> listA, List<Integer> listB) {
-		boolean[] visitedA = new boolean[N + 1];
-		boolean[] visitedB = new boolean[N + 1];
-		boolean successA = dfs(listA.get(0), visitedA, listA, 1);
-		boolean successB = dfs(listB.get(0), visitedB, listB, 1);
-		
-		int costA = 0;
-		int costB = 0;
-		for (int a : listA) {
-			costA += people[a];
-		}
-		for (int b : listB) {
-			costB += people[b];
-		}
-		
-		if (successA && successB) {
-			return Math.abs(costA - costB);
-		}
-
-		return Integer.MAX_VALUE;
+	
+	public static boolean isConnected(List<Integer> group1, List<Integer> group2){
+	    flag = false;
+	    Arrays.fill(visited, false);
+	    visited[group1.get(0)] = true;
+	    dfs(group1.get(0), group1.size(), 1, group1);
+	    if(!flag)
+	        return false;
+	    
+	    flag = false;
+        Arrays.fill(visited, false);	    
+        visited[group2.get(0)] = true;
+	    dfs(group2.get(0), group2.size(), 1, group2);
+	    
+	    if(!flag)
+	        return false;
+	        
+	    return true;
+	}
+	
+	public static int dfs(int start, int goal, int cnt, List<Integer> group){
+	    int tmp = cnt;
+	    
+	    if(cnt == goal){
+	        flag = true;
+	        return tmp;
+	    }
+	    
+	    for(int i=0; i<group.size(); i++){
+	        int next = group.get(i);
+	        
+	        if(visited[next])
+	            continue;
+	       
+	        if(!map[start][next])
+	            continue;
+	            
+	    
+	        visited[next] = true;
+	        tmp = Math.max(tmp, dfs(next, goal, tmp+1, group));
+	    }
+	    return tmp;
+	}
+	
+	public static void calc(List<Integer> group1, List<Integer> group2){
+    	int sum1 = 0;
+    	int sum2 = 0;
+    	
+    	for(int i=0; i<group1.size(); i++){
+    	    int idx = group1.get(i);
+    	    sum1 += people[idx];
+    	}
+    	
+    	for(int i=0; i<group2.size(); i++){
+    	    int idx = group2.get(i);
+    	    sum2 += people[idx];
+    	}
+    	
+    	answer = Math.min(answer, Math.abs(sum1 - sum2));
 	}
 }
