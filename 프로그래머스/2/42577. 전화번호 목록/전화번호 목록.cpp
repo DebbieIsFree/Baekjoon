@@ -12,7 +12,8 @@ bool solution(vector<string> phone_book) {
     
     
     // 유효성 검사 시간 초과
-    // 전화번호 길이가 짧은 순으로 정렬
+    // 전화번호 아스키코드순으로 정렬
+    // ex) "12", "123", "1234", "19", "199" ... 
 //     sort(phone_book.begin(), phone_book.end());
     
 //     for(int i=0; i<phone_book.size(); i++){
@@ -31,7 +32,9 @@ bool solution(vector<string> phone_book) {
 //         }
 //     }
     
-    // 전화번호 길이가 짧은 순으로 정렬
+    
+    // 전화번호 아스키코드순으로 정렬
+    // ex) "12", "123", "1234", "19", "199" ... 
     sort(phone_book.begin(), phone_book.end());
     
     for(int i=0; i<phone_book.size()-1; i++){
